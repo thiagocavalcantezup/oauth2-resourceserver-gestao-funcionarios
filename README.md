@@ -20,7 +20,7 @@ Para configurar e rodar a aplicação em ambiente local basta seguir os passos:
 1. Clonar o repositório ou fazer seu download:
 
 ```shell
-git clone ggit@github.com:zup-academy/oauth2-resourceserver-gestao-funcionarios.git
+git clone git@github.com:zup-academy/oauth2-resourceserver-gestao-funcionarios.git
 ```
 
 2. Importar o projeto na IDE IntelliJ;
