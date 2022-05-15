@@ -4,12 +4,11 @@ import base.SpringBootIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.math.BigDecimal;
-import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -31,7 +30,10 @@ class DetalhaFuncionarioControllerTest extends SpringBootIntegrationTest {
         repository.save(funcionario);
 
         // ação e validação
-        mockMvc.perform(GET("/api/funcionarios/{id}", funcionario.getId()))
+        mockMvc.perform(GET("/api/funcionarios/{id}", funcionario.getId())
+                        .with(jwt()
+                            .authorities(new SimpleGrantedAuthority("SCOPE_funcionarios:read"))
+                        ))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(funcionario.getId()))
                 .andExpect(jsonPath("$.nome").value(funcionario.getNome()))
@@ -48,9 +50,39 @@ class DetalhaFuncionarioControllerTest extends SpringBootIntegrationTest {
         repository.save(funcionario);
 
         // ação e validação
-        mockMvc.perform(GET("/api/funcionarios/{id}", -9999))
+        mockMvc.perform(GET("/api/funcionarios/{id}", -9999)
+                        .with(jwt()
+                            .authorities(new SimpleGrantedAuthority("SCOPE_funcionarios:read"))
+                        ))
                 .andExpect(status().isNotFound())
                 .andExpect(status().reason("funcionário não encontrado"))
+        ;
+    }
+
+    @Test
+    public void naoDeveDetalharFuncionario_quandoAccessTokenNaoEnviado() throws Exception {
+        // cenário
+        Funcionario funcionario = new Funcionario("Jordi",
+                "994.300.560-26", Cargo.DESENVOLVEDOR, new BigDecimal("3.99"));
+        repository.save(funcionario);
+
+        // ação e validação
+        mockMvc.perform(GET("/api/funcionarios/{id}", funcionario.getId()))
+                .andExpect(status().isUnauthorized())
+        ;
+    }
+
+    @Test
+    public void naoDeveDetalharFuncionario_quandoAccessTokenNaoPossuiScopeApropriado() throws Exception {
+        // cenário
+        Funcionario funcionario = new Funcionario("Jordi",
+                "994.300.560-26", Cargo.DESENVOLVEDOR, new BigDecimal("3.99"));
+        repository.save(funcionario);
+
+        // ação e validação
+        mockMvc.perform(GET("/api/funcionarios/{id}", funcionario.getId())
+                        .with(jwt()))
+                .andExpect(status().isForbidden())
         ;
     }
 }
