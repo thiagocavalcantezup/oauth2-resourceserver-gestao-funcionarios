@@ -34,11 +34,31 @@ git clone git@github.com:zup-academy/oauth2-resourceserver-gestao-funcionarios.g
 ./mvnw spring-boot:run
 ``` 
 
+4. Iniciar o Keycloack via Docker-Compose:
+
+```shell
+docker-compose -f docker-compose-keycloak.yml up -d
+```
+
+5. Acesse o Keycloack usando login `admin` e senha `admin`: http://localhost:18080/auth/admin/;
+6. Crie o Realm `gestao-funcionarios`;
+7. No Realm criado:
+    - 7.1. crie os Users: `rafael.ponte` e `jordi.silva`;
+    - 7.2. crie os Scopes: `funcionarios:read` e `funcionarios:write`;
+    - 7.3. crie o Client: `gestao-funcionarios-client`;
+        - configure _Access Type_ como `confidential`;
+        - configure o _Standard Flow Enabled_ como `ON`;
+        - configure o _Direct Access Grants_ Enabled como `ON`;
+        - adicione os Scopes ao Client criado como escopos opcionais;
+
 ## Consumindo a API REST da aplicação
 
 Aqui demonstramos através de alguns exemplos como você pode consumir a API REST exposta pela aplicação. Estamos utilizando o comando `cURL` como cliente HTTP mas você pode usar qualquer outro de sua preferência, como POSTman ou Insomnia. 
 
 Dado que a aplicação esteja rodando, basta executar os comandos abaixo para exercitar os endpoints públicos da aplicação.
+
+### Atenção:
+> Lembre-se de passar o `access_token` no cabeçalho HTTP de cada requisição;
 
 ### Criando novo funcionário
 
@@ -47,6 +67,7 @@ Caso precise gerar CPFs únicos para exercitar este endpoint, basta gera-los [ne
 ```shell
 curl --request POST \
   --url http://localhost:8080/oauth2-resourceserver-gestao-funcionarios/api/funcionarios \
+  --header 'Authorization: Bearer <access_token>' \
   --header 'Content-Type: application/json' \
   --data '{
 	"nome": "Jordi Silva",
@@ -59,19 +80,22 @@ curl --request POST \
 ### Detalhando funcionario existente
 ```shell
 curl --request GET \
-  --url http://localhost:8080/oauth2-resourceserver-gestao-funcionarios/api/funcionarios/1
+  --url http://localhost:8080/oauth2-resourceserver-gestao-funcionarios/api/funcionarios/1 \
+  --header 'Authorization: Bearer <access_token>'
 ```
 
 ### Listando todos os funcionarios
 ```shell
 curl --request GET \
-  --url http://localhost:8080/oauth2-resourceserver-gestao-funcionarios/api/funcionarios
+  --url http://localhost:8080/oauth2-resourceserver-gestao-funcionarios/api/funcionarios \
+  --header 'Authorization: Bearer <access_token>'
 ```
 
 ### Removendo um funcionario existente
 ```shell
 curl --request DELETE \
-  --url http://localhost:8080/oauth2-resourceserver-gestao-funcionarios/api/funcionarios/1
+  --url http://localhost:8080/oauth2-resourceserver-gestao-funcionarios/api/funcionarios/1 \
+  --header 'Authorization: Bearer <access_token>'
 ```
 
 ## Duvidas e suporte
