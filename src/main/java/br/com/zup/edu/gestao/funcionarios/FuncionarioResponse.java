@@ -29,4 +29,5 @@ public class FuncionarioResponse {
     public Cargo getCargo() {
         return cargo;
     }
+
 }

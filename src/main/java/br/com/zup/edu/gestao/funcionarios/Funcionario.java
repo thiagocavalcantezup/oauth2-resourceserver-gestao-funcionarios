@@ -1,9 +1,15 @@
 package br.com.zup.edu.gestao.funcionarios;
 
-import javax.persistence.*;
+import static javax.persistence.GenerationType.IDENTITY;
+
 import java.math.BigDecimal;
 
-import static javax.persistence.GenerationType.IDENTITY;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 @Entity
 public class Funcionario {
@@ -23,7 +29,7 @@ public class Funcionario {
     private BigDecimal salario;
 
     @Deprecated
-    public Funcionario(){}
+    public Funcionario() {}
 
     public Funcionario(String nome, String cpf, Cargo cargo, BigDecimal salario) {
         this.nome = nome;
@@ -51,4 +57,5 @@ public class Funcionario {
     public String getCpf() {
         return cpf;
     }
+
 }

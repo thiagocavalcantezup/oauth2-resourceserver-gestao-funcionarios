@@ -29,4 +29,5 @@ public class DetalhesDoFuncionarioResponse {
     public Cargo getCargo() {
         return cargo;
     }
+
 }

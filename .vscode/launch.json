@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-Oauth2ResourceserverGestaoFuncionariosApplication<oauth2-resourceserver-gestao-funcionarios>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "br.com.zup.edu.gestao.Oauth2ResourceserverGestaoFuncionariosApplication",
+      "projectName": "oauth2-resourceserver-gestao-funcionarios",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}

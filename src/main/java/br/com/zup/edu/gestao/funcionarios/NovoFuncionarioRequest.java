@@ -1,11 +1,12 @@
 package br.com.zup.edu.gestao.funcionarios;
 
-import org.hibernate.validator.constraints.br.CPF;
+import java.math.BigDecimal;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import java.math.BigDecimal;
+
+import org.hibernate.validator.constraints.br.CPF;
 
 public class NovoFuncionarioRequest {
 
@@ -33,27 +34,27 @@ public class NovoFuncionarioRequest {
     public String getNome() {
         return nome;
     }
+
     public String getCpf() {
         return cpf;
     }
+
     public Cargo getCargo() {
         return cargo;
     }
+
     public BigDecimal getSalario() {
         return salario;
     }
 
     @Override
     public String toString() {
-        return "NovoFuncionarioRequest{" +
-                "nome='" + nome + '\'' +
-                ", cpf='" + cpf + '\'' +
-                ", cargo=" + cargo +
-                ", salario=" + salario +
-                '}';
+        return "NovoFuncionarioRequest{" + "nome='" + nome + '\'' + ", cpf='" + cpf + '\''
+                + ", cargo=" + cargo + ", salario=" + salario + '}';
     }
 
     public Funcionario toModel() {
         return new Funcionario(nome, cpf, cargo, salario);
     }
+
 }
