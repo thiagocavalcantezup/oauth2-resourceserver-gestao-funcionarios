@@ -1,6 +1,7 @@
 package br.com.zup.edu.gestao.funcionarios;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -10,6 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import base.SpringBootIntegrationTest;
 
@@ -35,7 +37,11 @@ class ListaFuncionariosControllerTest extends SpringBootIntegrationTest {
         });
 
         // ação e validação
-        mockMvc.perform(GET("/api/funcionarios"))
+        mockMvc.perform(
+            GET("/api/funcionarios").with(
+                jwt().authorities(new SimpleGrantedAuthority("SCOPE_funcionarios:read"))
+            )
+        )
                .andExpect(status().isOk())
                .andExpect(jsonPath("$", hasSize(3)))
                .andExpect(jsonPath("$[0].nome").value("Alberto"))
@@ -49,9 +55,41 @@ class ListaFuncionariosControllerTest extends SpringBootIntegrationTest {
         repository.deleteAll();
 
         // ação e validação
-        mockMvc.perform(GET("/api/funcionarios"))
-               .andExpect(status().isOk())
-               .andExpect(jsonPath("$").isEmpty());
+        mockMvc.perform(
+            GET("/api/funcionarios").with(
+                jwt().authorities(new SimpleGrantedAuthority("SCOPE_funcionarios:read"))
+            )
+        ).andExpect(status().isOk()).andExpect(jsonPath("$").isEmpty());
+    }
+
+    @Test
+    public void naoDeveListarTodosOsFuncionarios_quandoTokenNaoEnviado() throws Exception {
+        // cenário
+        List.of(
+            new Funcionario("Rafael", "188.332.250-20", Cargo.TESTADOR, new BigDecimal("2.99")),
+            new Funcionario("Alberto", "525.894.650-92", Cargo.GERENTE, new BigDecimal("1.99")),
+            new Funcionario("Jordi", "994.300.560-26", Cargo.DESENVOLVEDOR, new BigDecimal("3.99"))
+        ).forEach(funcionario -> {
+            repository.save(funcionario);
+        });
+
+        // ação e validação
+        mockMvc.perform(GET("/api/funcionarios")).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void naoDeveListarTodosOsFuncionarios_quandoTokenNaoPossuiEscopoApropriado() throws Exception {
+        // cenário
+        List.of(
+            new Funcionario("Rafael", "188.332.250-20", Cargo.TESTADOR, new BigDecimal("2.99")),
+            new Funcionario("Alberto", "525.894.650-92", Cargo.GERENTE, new BigDecimal("1.99")),
+            new Funcionario("Jordi", "994.300.560-26", Cargo.DESENVOLVEDOR, new BigDecimal("3.99"))
+        ).forEach(funcionario -> {
+            repository.save(funcionario);
+        });
+
+        // ação e validação
+        mockMvc.perform(GET("/api/funcionarios").with(jwt())).andExpect(status().isForbidden());
     }
 
 }
